@@ -139,7 +139,7 @@
   function scopeText(aud, plan, period) { return (aud === 'CONVIDADO' ? 'Convidado' : 'Sócio') + ' · ' + planLabel(plan) + (period ? ' · ' + (period === 'MENSAL' ? 'Mensal' : 'Anual') : ''); }
   function norm(s) { return String(s || '').trim().toUpperCase(); }
   function byOrder(a, b) { return a.order - b.order || a.intent.localeCompare(b.intent); }
-  function periodAllowed(aud, plan) { return aud === 'SÓCIO' && plan !== 'TODOS'; }
+  function periodAllowed(aud, plan) { return aud === 'SÓCIO' && plan === 'NAÇÃO SEM FRONTEIRAS'; }
   function curPeriod() { return periodAllowed(state.aud, state.plan) ? state.period : ''; }
   function find(id) { for (var i = 0; i < state.recs.length; i++) if (state.recs[i].id === id) return state.recs[i]; }
 
@@ -194,7 +194,7 @@
     }).join('') + '</div></div>';
     h += '<div class="frow"><span class="flabel">Periodicidade</span>' + (periodAllowed(state.aud, state.plan)
       ? '<div class="pills">' + PERIODS.map(function (o) { return '<button type="button" class="pill" data-act="period" data-v="' + o.key + '" aria-pressed="' + (o.key === period) + '">' + o.label + '</button>'; }).join('') + '</div>'
-      : '<span class="weak">Só vale para plano específico de sócio.</span>') + '</div></section>';
+      : '<span class="weak">Só para Nação Sem Fronteiras (Mensal ou Anual).</span>') + '</div></section>';
 
     h += '<div class="cols"><section class="card list" aria-labelledby="lt">';
     h += '<div class="frow" style="justify-content:space-between"><h2 id="lt">' + esc(scopeText(state.aud, state.plan, period)) + '</h2><span class="weak">' + activeIds.length + ' ativo(s) · ' + (list.length - activeIds.length) + ' inativo(s)</span></div>';
@@ -261,7 +261,7 @@
       + '<input id="f-intent" type="text" maxlength="24" data-f="intent" value="' + esc(d.intent) + '"><span class="hint">Máximo de 24 caracteres: é o limite de uma linha de menu no WhatsApp.</span></label>'
       + '<label class="f"><span><span><span class="req">*</span> Resposta do bot</span><span class="weak">' + String(d.answer || '').length + '/4000</span></span>'
       + '<textarea id="f-answer" rows="7" maxlength="4000" data-f="answer">' + esc(d.answer) + '</textarea>'
-      + '<span class="hint">Texto simples. Quebras de linha são mantidas; cole links completos (https://…) que o WhatsApp torna clicáveis. Evite *asteriscos*: no chat do site eles aparecem.</span></label>'
+      + '<span class="hint">Até 4.000 caracteres numa mensagem só. Texto simples. Quebras de linha são mantidas; cole links completos (https://…) que o WhatsApp torna clicáveis. Evite *asteriscos*: no chat do site eles aparecem.</span></label>'
       + '<div class="g2"><label class="f"><span><span><span class="req">*</span> Ordem no menu</span></span><input id="f-order" type="number" min="1" max="99" data-f="order" value="' + esc(d.order) + '"></label>'
       + '<label class="chk"><input id="f-active" type="checkbox" data-f="active"' + (d.active ? ' checked' : '') + '> Ativo (aparece no menu do bot)</label></div>'
       + '<label class="f"><span>Observação interna (o bot não lê)</span><textarea id="f-notes" rows="2" maxlength="255" data-f="notes">' + esc(d.notes) + '</textarea></label></div>';
