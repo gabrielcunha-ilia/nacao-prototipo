@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPRI-142 · Protótipo · Respostas do Bot · Meu Plano</title>
+<meta property="og:title" content="Protótipo · Respostas do Bot · Meu Plano">
+<meta property="og:description" content="Tela de cadastro das respostas do bot por plano e intenção (SPRI-142). Dados fictícios.">
+<meta name="robots" content="noindex">
+<meta name="description" content="Tela de cadastro das respostas do bot por plano e intenção (SPRI-142). Dados fictícios.">
+<!--
+  Protótipo navegável da tela de gestão de respostas do bot por plano (SPRI-142).
+  Arquivo autocontido: abra direto no navegador, sem servidor e sem dependências.
+  Dados fictícios; textos entre colchetes são placeholders para o CX.
+  Paleta Flamengo igual à de force-app-ui/main/default/lwc/atendimentoEstilos.
+-->
+<style>
+  :root {
+    --fla-red: #c8102e; --fla-red-dark: #9e0b22; --fla-red-soft: #fdecef; --fla-ink: #111;
+    --text: #181818; --text-weak: #5c5c5c; --border: #e5e5e5; --border-strong: #c9c9c9; --bg: #f3f3f3;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 -apple-system, "Segoe UI", system-ui, Roboto, Arial, sans-serif; }
+  button, input, select, textarea { font: inherit; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--fla-red); outline-offset: 2px; }
+  .page { max-width: 1440px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  header.top { background: var(--fla-ink); color: #fff; border-bottom: 3px solid var(--fla-red); border-radius: 8px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+  header.top .icon { width: 40px; height: 40px; border-radius: 6px; background: var(--fla-red); display: flex; align-items: center; justify-content: center; }
+  header.top small { color: #d4d4d4; font-size: 12px; display: block; }
+  header.top h1 { margin: 0; font-size: 20px; }
+  .bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .bar p { margin: 0; flex: 1 1 320px; color: #3e3e3c; }
+  .chk { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; }
+  .chk input { width: 18px; height: 18px; accent-color: var(--fla-red); }
+  .btn { min-height: 44px; padding: 0 18px; border-radius: 6px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-strong); background: #fff; color: var(--fla-red-dark); }
+  .btn.primary { background: var(--fla-red); border-color: var(--fla-red); color: #fff; }
+  .btn.sm { min-height: 36px; padding: 0 12px; font-size: 13px; }
+  .btn.neutral { color: #3e3e3c; }
+  .icon-btn { width: 36px; height: 36px; border: 1px solid var(--border-strong); background: #fff; border-radius: 6px; cursor: pointer; color: #3e3e3c; display: inline-flex; align-items: center; justify-content: center; }
+  .icon-btn:disabled { color: var(--border-strong); cursor: default; }
+  .filters { display: flex; flex-direction: column; gap: 12px; }
+  .frow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .flabel { width: 110px; font-size: 12px; font-weight: 700; color: #3e3e3c; text-transform: uppercase; letter-spacing: .04em; }
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 20px; cursor: pointer; border: 1px solid var(--border-strong); background: #fff; color: var(--text); }
+  .pill[aria-pressed="true"] { background: var(--fla-red); border-color: var(--fla-red); color: #fff; font-weight: 600; }
+  .pill .count { background: var(--bg); color: #3e3e3c; border-radius: 10px; padding: 1px 8px; font-size: 12px; }
+  .pill[aria-pressed="true"] .count { background: rgba(255,255,255,.22); color: #fff; }
+  .cols { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+  .list { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .preview { flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  h2 { margin: 0; font-size: 16px; }
+  .weak { color: var(--text-weak); }
+  .notice { background: #fef1e8; border: 1px solid #f9c9a4; border-radius: 6px; padding: 12px 14px; color: #6b3300; }
+  .empty { border: 1px dashed var(--border-strong); border-radius: 8px; padding: 32px; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  ol.rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); background: #fff; }
+  .row.inactive { border-style: dashed; border-color: var(--border-strong); background: #fafaf9; opacity: .75; }
+  .num { width: 36px; height: 36px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .body { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .intent { font-weight: 700; font-size: 15px; }
+  .snippet { color: var(--text-weak); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; }
+  .b-menu { background: #cdefc4; color: #194e31; } .b-out { background: #fde9d9; color: #7a3e00; } .b-off { background: var(--border); color: #3e3e3c; }
+  .actions { display: flex; gap: 4px; align-items: center; }
+  .chat { background: #efeae2; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 420px; }
+  .me { align-self: flex-end; max-width: 80%; background: #d9fdd3; border-radius: 10px 10px 2px 10px; padding: 8px 12px; }
+  .bot { align-self: flex-start; max-width: 85%; background: #fff; border-radius: 10px 10px 10px 2px; padding: 10px 12px; white-space: pre-line; }
+  .botmenu { align-self: flex-start; width: 85%; background: #fff; border-radius: 10px 10px 10px 2px; overflow: hidden; }
+  .botmenu ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+  .botmenu li { border-bottom: 1px solid var(--border); }
+  .botmenu button { width: 100%; min-height: 44px; border: 0; background: #fff; color: var(--fla-red-dark); font-weight: 600; cursor: pointer; }
+  .botmenu button.on { background: var(--fla-red-soft); }
+  .o-ok { color: #194e31; font-weight: 600; } .o-fb { color: #7a3e00; font-weight: 600; } .o-none { color: #8e030f; font-weight: 600; }
+  .toast { background: #2e844a; color: #fff; border-radius: 6px; padding: 12px 16px; font-weight: 600; }
+  .overlay { position: fixed; inset: 0; background: rgba(8,7,7,.6); display: flex; justify-content: center; align-items: flex-start; padding: 48px 16px; overflow: auto; }
+  .modal { width: 100%; max-width: 960px; background: #fff; border-radius: 8px; overflow: hidden; }
+  .mhead, .mfoot { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .mhead { border-bottom: 1px solid var(--border); } .mhead h2 { font-size: 18px; }
+  .mfoot { border-top: 1px solid var(--border); background: var(--bg); }
+  .mbody { padding: 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .form { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .mprev { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .g3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+  .g2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; align-items: end; }
+  label.f { display: flex; flex-direction: column; gap: 4px; }
+  label.f > span { font-size: 13px; color: #3e3e3c; display: flex; justify-content: space-between; }
+  label.f input[type=text], label.f input[type=number], label.f select, label.f textarea { min-height: 40px; border: 1px solid #939393; border-radius: 4px; padding: 8px 10px; background: #fff; }
+  .req { color: #ba0517; }
+  .hint { font-size: 12px; color: var(--text-weak); }
+  .errors { margin: 16px 20px 0; background: #fdedea; border: 1px solid #f0a79c; border-radius: 6px; padding: 10px 14px; color: #8e030f; }
+  @media (max-width: 640px) { .g3, .g2 { grid-template-columns: 1fr; } .flabel { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="page" id="app"></div>
+
+<script>
+(function () {
+  var PLANS = [
+    { key: 'TODOS', label: 'Todos os planos' },
+    { key: 'NAÇÃO MARACA 1', label: 'Maraca 1' },
+    { key: 'NAÇÃO MARACA 2', label: 'Maraca 2' },
+    { key: 'NAÇÃO MARACA 3', label: 'Maraca 3' },
+    { key: 'NAÇÃO SEM FRONTEIRAS', label: 'Nação Sem Fronteiras' }
+  ];
+  var PERIODS = [{ key: '', label: 'Qualquer' }, { key: 'MENSAL', label: 'Mensal' }, { key: 'ANUAL', label: 'Anual' }];
+  var AUDS = [{ key: 'SÓCIO', label: 'Sócio' }, { key: 'CONVIDADO', label: 'Convidado' }];
+  var STATUS_TXT = 'Rubro-Negro, pra conferir o status do seu plano, acesse nacao.flamengo.com.br, faça login com seu Fla-ID, vá em Minha Conta e clique em Meu Plano.';
+
+  function rec(id, aud, plan, period, intent, answer, order, active, notes) {
+    return { id: id, aud: aud, plan: plan, period: period, intent: intent, answer: answer, order: order, active: active, notes: notes || '' };
+  }
+  var state = {
+    recs: [
+      rec('a1', 'SÓCIO', 'TODOS', '', 'Status do meu plano', STATUS_TXT, 1, true),
+      rec('a2', 'SÓCIO', 'TODOS', '', 'Parcelas em aberto', 'Para ver e pagar parcelas em aberto, acesse nacao.flamengo.com.br, faça login com seu Fla-ID e vá em Minha Conta.\n\n[CAMINHO EXATO A CONFIRMAR PELO CX]', 2, true, 'usar deep-link da área logada quando existir'),
+      rec('a3', 'SÓCIO', 'TODOS', '', 'Como renovar?', '[TEXTO DO CX SOBRE RENOVAÇÃO]', 3, true),
+      rec('a4', 'SÓCIO', 'TODOS', '', 'Benefícios do plano', '[TEXTO DO CX SOBRE BENEFÍCIOS]', 4, true),
+      rec('a5', 'SÓCIO', 'TODOS', '', 'Como incluir convidado', '[TEXTO DO CX SOBRE INCLUSÃO DE CONVIDADO]', 5, true),
+      rec('a6', 'SÓCIO', 'TODOS', '', 'Problema no login', '[TEXTO DO CX SOBRE LOGIN NO FLA-ID]', 6, true, 'escalar se não resolver'),
+      rec('a7', 'SÓCIO', 'TODOS', '', 'Trocar cartão', '[TEXTO DO CX SOBRE TROCA DE CARTÃO]', 7, false, 'aguardando novo fluxo do Fla-ID'),
+      rec('m1', 'SÓCIO', 'NAÇÃO MARACA 1', '', 'Benefícios do Maraca 1', '[TEXTO DO CX SOBRE BENEFÍCIOS DO MARACA 1]', 1, true),
+      rec('m2', 'SÓCIO', 'NAÇÃO MARACA 1', '', 'Status do meu plano', STATUS_TXT, 2, true),
+      rec('m3', 'SÓCIO', 'NAÇÃO MARACA 1', '', 'Como incluir convidado', '[TEXTO DO CX: CONVIDADO NO MARACA 1]', 3, true),
+      rec('s1', 'SÓCIO', 'NAÇÃO SEM FRONTEIRAS', '', 'Status do meu plano', STATUS_TXT, 1, true),
+      rec('s2', 'SÓCIO', 'NAÇÃO SEM FRONTEIRAS', '', 'Vantagens do plano', '[TEXTO DO CX SOBRE A NAÇÃO SEM FRONTEIRAS]', 2, true),
+      rec('n1', 'SÓCIO', 'NAÇÃO SEM FRONTEIRAS', 'MENSAL', 'Próxima mensalidade', '[TEXTO DO CX SOBRE COBRANÇA MENSAL]', 1, true),
+      rec('n2', 'SÓCIO', 'NAÇÃO SEM FRONTEIRAS', 'MENSAL', 'Parcelas em aberto', '[TEXTO DO CX: PARCELAS NO PLANO MENSAL]', 2, true),
+      rec('c1', 'CONVIDADO', 'TODOS', '', 'Benefícios do convidado', '[TEXTO DO CX SOBRE BENEFÍCIOS DO CONVIDADO]', 1, true),
+      rec('c2', 'CONVIDADO', 'TODOS', '', 'Ingresso do convidado', '[TEXTO DO CX SOBRE INGRESSO DO CONVIDADO]', 2, true)
+    ],
+    aud: 'SÓCIO', plan: 'TODOS', period: '', showInactive: true, pick: null, modal: null, toast: ''
+  };
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function planLabel(k) { for (var i = 0; i < PLANS.length; i++) if (PLANS[i].key === k) return PLANS[i].label; return k; }
+  function scopeText(aud, plan, period) { return (aud === 'CONVIDADO' ? 'Convidado' : 'Sócio') + ' · ' + planLabel(plan) + (period ? ' · ' + (period === 'MENSAL' ? 'Mensal' : 'Anual') : ''); }
+  function norm(s) { return String(s || '').trim().toUpperCase(); }
+  function byOrder(a, b) { return a.order - b.order || a.intent.localeCompare(b.intent); }
+  function periodAllowed(aud, plan) { return aud === 'SÓCIO' && plan !== 'TODOS'; }
+  function curPeriod() { return periodAllowed(state.aud, state.plan) ? state.period : ''; }
+  function find(id) { for (var i = 0; i < state.recs.length; i++) if (state.recs[i].id === id) return state.recs[i]; }
+
+  // Cascata de fallback (substituição): o primeiro nível com item ativo vence.
+  function levels(aud, plan, period) {
+    var out = [];
+    if (aud === 'SÓCIO') {
+      if (plan !== 'TODOS') { if (period) out.push(['SÓCIO', plan, period]); out.push(['SÓCIO', plan, '']); }
+      out.push(['SÓCIO', 'TODOS', '']);
+    } else {
+      if (plan !== 'TODOS') out.push(['CONVIDADO', plan, '']);
+      out.push(['CONVIDADO', 'TODOS', '']);
+      if (plan !== 'TODOS') out.push(['SÓCIO', plan, '']);
+      out.push(['SÓCIO', 'TODOS', '']);
+    }
+    return out;
+  }
+  function activeAt(l) { return state.recs.filter(function (r) { return r.active && r.aud === l[0] && r.plan === l[1] && (r.period || '') === l[2]; }).sort(byOrder); }
+  function scoped() { var p = curPeriod(); return state.recs.filter(function (r) { return r.aud === state.aud && r.plan === state.plan && (r.period || '') === p; }).sort(byOrder); }
+
+  var toastTimer;
+  function flash(msg) { state.toast = msg; render(); clearTimeout(toastTimer); toastTimer = setTimeout(function () { state.toast = ''; render(); }, 3500); }
+
+  function render() {
+    var period = curPeriod();
+    var list = scoped();
+    var activeIds = list.filter(function (r) { return r.active; }).map(function (r) { return r.id; });
+    var visible = list.filter(function (r) { return state.showInactive || r.active; });
+    var lv = levels(state.aud, state.plan, period);
+    var used = -1, items = [];
+    for (var i = 0; i < lv.length; i++) { items = activeAt(lv[i]); if (items.length) { used = i; break; } }
+    var firstLabel = scopeText(lv[0][0], lv[0][1], lv[0][2]);
+    var menu = items.slice(0, 5);
+    var picked = menu.filter(function (r) { return r.id === state.pick; })[0];
+
+    var h = '';
+    h += '<header class="top"><div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg></div>'
+       + '<div><small>Central da Nação · Bot</small><h1>Respostas do Bot · Meu Plano</h1></div></header>';
+    h += '<section class="card bar"><p>O que você publica aqui é o que o bot responde ao torcedor. Até 5 itens ativos por plano aparecem no menu.</p>'
+       + '<label class="chk"><input type="checkbox" data-act="inactive"' + (state.showInactive ? ' checked' : '') + '> Mostrar inativos</label>'
+       + '<button type="button" class="icon-btn" style="width:44px;height:44px" aria-label="Atualizar" data-act="refresh"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>'
+       + '<button type="button" class="btn primary" data-act="new">+ Nova resposta</button></section>';
+    if (state.toast) h += '<div class="toast" role="status">' + esc(state.toast) + '</div>';
+
+    h += '<section class="card filters" aria-label="Filtros">';
+    h += '<div class="frow"><span class="flabel">Público</span><div class="pills">' + AUDS.map(function (a) {
+      return '<button type="button" class="pill" data-act="aud" data-v="' + esc(a.key) + '" aria-pressed="' + (a.key === state.aud) + '">' + a.label + '</button>';
+    }).join('') + '</div></div>';
+    h += '<div class="frow"><span class="flabel">Plano</span><div class="pills">' + PLANS.map(function (p) {
+      var n = state.recs.filter(function (r) { return r.active && r.aud === state.aud && r.plan === p.key; }).length;
+      return '<button type="button" class="pill" data-act="plan" data-v="' + esc(p.key) + '" aria-pressed="' + (p.key === state.plan) + '">' + p.label + ' <span class="count">' + n + (n === 1 ? ' ativo' : ' ativos') + '</span></button>';
+    }).join('') + '</div></div>';
+    h += '<div class="frow"><span class="flabel">Periodicidade</span>' + (periodAllowed(state.aud, state.plan)
+      ? '<div class="pills">' + PERIODS.map(function (o) { return '<button type="button" class="pill" data-act="period" data-v="' + o.key + '" aria-pressed="' + (o.key === period) + '">' + o.label + '</button>'; }).join('') + '</div>'
+      : '<span class="weak">Só vale para plano específico de sócio.</span>') + '</div></section>';
+
+    h += '<div class="cols"><section class="card list" aria-labelledby="lt">';
+    h += '<div class="frow" style="justify-content:space-between"><h2 id="lt">' + esc(scopeText(state.aud, state.plan, period)) + '</h2><span class="weak">' + activeIds.length + ' ativo(s) · ' + (list.length - activeIds.length) + ' inativo(s)</span></div>';
+    if (used > 0 && activeIds.length === 0) h += '<div class="notice">Este filtro não tem itens ativos. O torcedor vê o menu de ' + esc(scopeText(lv[used][0], lv[used][1], lv[used][2])) + '.</div>';
+    if (!visible.length) h += '<div class="empty"><strong>Nenhuma resposta cadastrada neste filtro.</strong><button type="button" class="btn" data-act="new">Cadastrar a primeira resposta</button></div>';
+    h += '<ol class="rows">' + visible.map(function (r, i) {
+      var pos = activeIds.indexOf(r.id);
+      var badge = !r.active ? '<span class="badge b-off">Inativo</span>' : (pos < 5 ? '<span class="badge b-menu">No menu · ' + (pos + 1) + 'º</span>' : '<span class="badge b-out">Fora do menu</span>');
+      return '<li class="row' + (r.active ? '' : ' inactive') + '"><div class="num">' + r.order + '</div>'
+        + '<div class="body"><div class="frow" style="gap:8px"><span class="intent">' + esc(r.intent) + '</span>' + badge + '</div>'
+        + '<span class="snippet">' + esc(String(r.answer).replace(/\n+/g, ' ')) + '</span>'
+        + (r.notes ? '<span class="weak" style="font-size:12px">Obs.: ' + esc(r.notes) + '</span>' : '') + '</div>'
+        + '<div class="actions">'
+        + '<button type="button" class="icon-btn" aria-label="Subir ' + esc(r.intent) + '" data-act="up" data-i="' + i + '"' + (i === 0 ? ' disabled' : '') + '>&#9650;</button>'
+        + '<button type="button" class="icon-btn" aria-label="Descer ' + esc(r.intent) + '" data-act="down" data-i="' + i + '"' + (i === visible.length - 1 ? ' disabled' : '') + '>&#9660;</button>'
+        + '<button type="button" class="btn sm" data-act="edit" data-id="' + r.id + '">Editar</button>'
+        + '<button type="button" class="btn sm neutral" data-act="toggle" data-id="' + r.id + '">' + (r.active ? 'Inativar' : 'Reativar') + '</button>'
+        + '</div></li>';
+    }).join('') + '</ol></section>';
+
+    var origin = used === -1 ? '<span class="o-none">Nenhum nível tem itens ativos: o bot avisa e volta ao menu.</span>'
+      : used === 0 ? '<span class="o-ok">Origem do menu: ' + esc(firstLabel) + '.</span>'
+      : '<span class="o-fb">Usando ' + esc(scopeText(lv[used][0], lv[used][1], lv[used][2])) + ': não há itens ativos em ' + esc(firstLabel) + '.</span>';
+    h += '<aside class="card preview" aria-labelledby="pt"><div><h2 id="pt">O bot diz</h2><div class="weak">Torcedor: ' + esc(scopeText(state.aud, state.plan, period)) + '</div>' + origin + '</div>';
+    h += '<div class="chat"><div class="me">Meu Plano</div>';
+    if (menu.length) {
+      h += '<div class="botmenu"><div style="padding:10px 12px">Rubro-Negro, sobre o seu plano, escolha uma opção:</div><ul>' + menu.map(function (r) {
+        return '<li><button type="button" data-act="pick" data-id="' + r.id + '"' + (picked && picked.id === r.id ? ' class="on"' : '') + '>' + esc(r.intent) + '</button></li>';
+      }).join('') + '</ul></div>';
+    } else h += '<div class="bot">Ainda não temos informações cadastradas sobre o seu plano. Vou te levar de volta ao menu.</div>';
+    if (picked) h += '<div class="me">' + esc(picked.intent) + '</div><div class="bot">' + esc(picked.answer) + '</div><div class="bot">Era só isso?</div>';
+    h += '</div><span class="hint">Clique numa opção do menu para ver a resposta. Itens após o 5º ativo não aparecem para o torcedor.</span></aside></div>';
+
+    if (state.modal) h += renderModal();
+    var focusId = document.activeElement && document.activeElement.id;
+    var caret = focusId && document.activeElement.selectionStart;
+    document.getElementById('app').innerHTML = h;
+    if (focusId && document.getElementById(focusId)) {
+      var el = document.getElementById(focusId); el.focus();
+      if (caret != null && el.setSelectionRange) try { el.setSelectionRange(caret, caret); } catch (e) {}
+    }
+  }
+
+  function renderModal() {
+    var m = state.modal, d = m.draft;
+    var pos = '';
+    if (!d.active) pos = 'Inativo: não aparece no menu.';
+    else {
+      var peers = state.recs.filter(function (r) { return r.id !== d.id && r.active && r.aud === d.aud && r.plan === d.plan && (r.period || '') === (d.period || ''); })
+        .concat([{ id: d.id || 'novo', intent: String(d.intent || ''), order: parseInt(d.order, 10) || 99 }]).sort(byOrder);
+      var at = 0; peers.forEach(function (p, i) { if (p.id === (d.id || 'novo')) at = i; });
+      pos = at < 5 ? 'Vai aparecer em ' + (at + 1) + 'º no menu de ' + scopeText(d.aud, d.plan, d.period) + '.' : 'Fica fora do menu (já há 5 itens ativos antes dele).';
+    }
+    function opts(list, v) { return list.map(function (o) { return '<option value="' + esc(o.key) + '"' + (o.key === v ? ' selected' : '') + '>' + o.label + '</option>'; }).join(''); }
+    var len = String(d.intent || '').length;
+    var h = '<div class="overlay" data-act="overlay"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">';
+    h += '<div class="mhead"><h2 id="mt">' + (m.mode === 'edit' ? 'Editar resposta' : 'Nova resposta') + '</h2><button type="button" class="icon-btn" style="border:0;width:44px;height:44px" aria-label="Fechar" data-act="close">&#10005;</button></div>';
+    if (m.errors.length) h += '<div class="errors" role="alert">' + m.errors.map(function (e) { return '<div>' + esc(e) + '</div>'; }).join('') + '</div>';
+    h += '<div class="mbody"><div class="form"><div class="g3">'
+      + '<label class="f"><span><span><span class="req">*</span> Público</span></span><select id="f-aud" data-f="aud">' + opts(AUDS, d.aud) + '</select></label>'
+      + '<label class="f"><span><span><span class="req">*</span> Plano</span></span><select id="f-plan" data-f="plan">' + opts(PLANS, d.plan) + '</select></label>'
+      + '<label class="f"><span>Periodicidade</span><select id="f-period" data-f="period"' + (periodAllowed(d.aud, d.plan) ? '' : ' disabled') + '>' + opts(PERIODS, d.period) + '</select></label></div>'
+      + '<label class="f"><span><span><span class="req">*</span> Intenção (texto da opção no menu)</span><span' + (len >= 22 ? ' style="color:#7a3e00;font-weight:700"' : ' class="weak"') + '>' + len + '/24</span></span>'
+      + '<input id="f-intent" type="text" maxlength="24" data-f="intent" value="' + esc(d.intent) + '"><span class="hint">Máximo de 24 caracteres: é o limite de uma linha de menu no WhatsApp.</span></label>'
+      + '<label class="f"><span><span><span class="req">*</span> Resposta do bot</span><span class="weak">' + String(d.answer || '').length + '/4000</span></span>'
+      + '<textarea id="f-answer" rows="7" maxlength="4000" data-f="answer">' + esc(d.answer) + '</textarea>'
+      + '<span class="hint">Texto simples. Quebras de linha são mantidas; cole links completos (https://…) que o WhatsApp torna clicáveis. Evite *asteriscos*: no chat do site eles aparecem.</span></label>'
+      + '<div class="g2"><label class="f"><span><span><span class="req">*</span> Ordem no menu</span></span><input id="f-order" type="number" min="1" max="99" data-f="order" value="' + esc(d.order) + '"></label>'
+      + '<label class="chk"><input id="f-active" type="checkbox" data-f="active"' + (d.active ? ' checked' : '') + '> Ativo (aparece no menu do bot)</label></div>'
+      + '<label class="f"><span>Observação interna (o bot não lê)</span><textarea id="f-notes" rows="2" maxlength="255" data-f="notes">' + esc(d.notes) + '</textarea></label></div>';
+    h += '<div class="mprev"><strong style="font-size:13px;color:#3e3e3c">Prévia da resposta</strong><div class="chat" style="min-height:240px"><div class="me">' + esc(d.intent || '[Intenção]') + '</div><div class="bot">' + esc(d.answer || '[Resposta do bot]') + '</div></div><span class="hint">' + esc(pos) + '</span></div></div>';
+    h += '<div class="mfoot"><span class="hint">Alterações ficam no histórico do registro (quem, quando, antes e depois).</span><div class="actions" style="gap:8px"><button type="button" class="btn" data-act="close">Cancelar</button><button type="button" class="btn primary" data-act="save">Salvar</button></div></div>';
+    return h + '</div></div>';
+  }
+
+  function openModal(mode, r) {
+    var p = curPeriod();
+    var d = r ? Object.assign({}, r) : { id: '', aud: state.aud, plan: state.plan, period: p, intent: '', answer: '', order: scoped().filter(function (x) { return x.active; }).length + 1, active: true, notes: '' };
+    state.modal = { mode: mode, draft: d, errors: [] }; render();
+    var first = document.getElementById('f-intent'); if (first) first.focus();
+  }
+
+  function save() {
+    var m = state.modal, d = m.draft, errs = [], order = parseInt(d.order, 10);
+    if (!norm(d.intent)) errs.push('Informe a intenção.');
+    if (!String(d.answer || '').trim()) errs.push('Informe a resposta do bot.');
+    if (!(order >= 1 && order <= 99)) errs.push('A ordem precisa estar entre 1 e 99.');
+    if (state.recs.some(function (r) { return r.id !== d.id && r.aud === d.aud && r.plan === d.plan && (r.period || '') === (d.period || '') && norm(r.intent) === norm(d.intent); }))
+      errs.push('Já existe essa intenção para este público, plano e periodicidade.');
+    if (errs.length) { m.errors = errs; render(); return; }
+    var r = Object.assign({}, d, { order: order, intent: String(d.intent).trim() });
+    if (m.mode === 'new') { r.id = 'n' + Date.now(); state.recs.push(r); }
+    else state.recs = state.recs.map(function (x) { return x.id === r.id ? r : x; });
+    state.modal = null; state.aud = r.aud; state.plan = r.plan; state.period = r.period || ''; state.pick = null;
+    flash('Resposta gravada: "' + r.intent + '".');
+  }
+
+  var app = document.getElementById('app');
+  app.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-act]'); if (!t) return;
+    var act = t.getAttribute('data-act');
+    if (act === 'overlay' && e.target !== t) return;
+    var visible = scoped().filter(function (r) { return state.showInactive || r.active; });
+    switch (act) {
+      case 'aud': state.aud = t.getAttribute('data-v'); state.pick = null; render(); break;
+      case 'plan': state.plan = t.getAttribute('data-v'); state.pick = null; render(); break;
+      case 'period': state.period = t.getAttribute('data-v'); state.pick = null; render(); break;
+      case 'refresh': flash('Lista atualizada.'); break;
+      case 'new': openModal('new'); break;
+      case 'edit': openModal('edit', find(t.getAttribute('data-id'))); break;
+      case 'toggle': var r = find(t.getAttribute('data-id')); r.active = !r.active; flash((r.active ? 'Reativada: "' : 'Inativada: "') + r.intent + '".'); break;
+      case 'up': case 'down':
+        var i = +t.getAttribute('data-i'), j = act === 'up' ? i - 1 : i + 1, a = visible[i], b = visible[j];
+        if (a && b) { var o = a.order; a.order = b.order; b.order = o; if (a.order === b.order) { act === 'up' ? a.order-- : a.order++; } render(); }
+        break;
+      case 'pick': state.pick = t.getAttribute('data-id'); render(); break;
+      case 'close': case 'overlay': state.modal = null; render(); break;
+      case 'save': save(); break;
+    }
+  });
+  app.addEventListener('change', function (e) {
+    if (e.target.getAttribute('data-act') === 'inactive') { state.showInactive = e.target.checked; render(); }
+  });
+  app.addEventListener('input', function (e) {
+    var f = e.target.getAttribute('data-f'); if (!f || !state.modal) return;
+    var d = state.modal.draft;
+    d[f] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    if (!periodAllowed(d.aud, d.plan)) d.period = '';
+    render();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && state.modal) { state.modal = null; render(); } });
+
+  render();
+})();
+</script>
+</body>
+</html>
